@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static evenza_ui %}
+{% block scripts %}
+<script src="{% static 'vendor/chart.umd.js' %}" defer></script>
+<script src="{% static 'js/dashboard.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+{% event_creation_url as create_event_url %}
+<header class="dash-hero">
+    <div class="dash-image" aria-hidden="true"><img src="{% static 'images/gala.webp' %}" alt="" fetchpriority="high"></div>
+    <div class="dash-welcome">
+        <p class="hero-date"><i class="bi bi-stars" aria-hidden="true"></i> {% now "l j F Y" %}</p>
+        <h1>Bonjour, {{ user.name|truncatechars:38 }}</h1>
+        <p>Préparez vos prochains événements et retrouvez l’essentiel de votre activité.</p>
+        <div class="button-row">
+            {% if create_event_url %}<a class="btn btn-cream" href="{{ create_event_url }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Créer un événement</a>{% else %}<a class="btn btn-cream" href="{{ event_list_url }}">Voir les événements</a>{% endif %}
+            <a class="btn btn-hero-outline" href="#calendrier"><i class="bi bi-calendar-event" aria-hidden="true"></i> Voir le calendrier</a>
+            <a class="btn btn-hero-outline" href="#gestions"><i class="bi bi-grid" aria-hidden="true"></i> Accès aux gestions</a>
+        </div>
+    </div>
+</header>
+<div class="kpis" aria-label="Indicateurs">
+    {% for label, icon, count, url in kpis %}
+    <a class="panel metric metric-{{ icon }}" href="{{ url }}">
+        <span class="metric-icon"><i class="bi bi-{{ icon }}" aria-hidden="true"></i></span>
+        <div><span>{{ label }}</span><strong>{{ count }}</strong></div>
+    </a>
+    {% endfor %}
+</div>
+<div class="dashboard-grid agenda-grid">
+    <section class="panel dashboard-panel upcoming-panel" aria-labelledby="upcoming-heading">
+        <header class="section-header">
+            <div><span class="section-icon"><i class="bi bi-calendar2-heart" aria-hidden="true"></i></span><h2 id="upcoming-heading">Prochains événements</h2></div>
+            <a class="text-action" href="{{ event_list_url }}">Voir tout</a>
+        </header>
+        {% if events %}
+        <div class="event-cards">
+            {% for event, url in events %}
+            <article class="event-card">
+                <a class="event-card-cover" href="{{ url }}" aria-label="Voir {{ event.title }}">
+                    <img src="{% static event.type|event_cover %}" alt="" width="420" height="220" loading="lazy" decoding="async">
+                    <time class="event-date" datetime="{{ event.start_at|date:'c' }}">{{ event.start_at|date:"d" }}<small>{{ event.start_at|date:"M" }}</small></time>
+                </a>
+                <div class="event-card-body">
+                    <div class="event-card-meta"><span>{{ event.get_type_display }}</span>{% include 'components/status.html' with value=event.get_status_display %}</div>
+                    <h3><a href="{{ url }}">{{ event.title }}</a></h3>
+                    <p><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ event.location }} <span aria-hidden="true">·</span> {{ event.start_at|date:"H:i" }}</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+            {% if create_event_url %}
+            {% include 'components/empty.html' with photo='images/private-card.webp' icon='calendar2-heart' heading='Aucun événement à venir' description='Ajoutez votre prochain événement pour le retrouver ici et dans le calendrier.' url=create_event_url action_label='Créer un événement' %}
+            {% else %}
+            {% include 'components/empty.html' with photo='images/private-card.webp' icon='calendar2-heart' heading='Aucun événement à venir' description='Les événements que vous pouvez consulter apparaîtront ici.' %}
+            {% endif %}
+        {% endif %}
+    </section>
+    {% event_calendar %}
+</div>
+<div class="dashboard-grid analytics-grid">
+    <section class="panel dashboard-panel">
+        <header class="section-header"><div><span class="section-icon"><i class="bi bi-bar-chart" aria-hidden="true"></i></span><h2>Événements par mois</h2></div></header>
+        <p class="muted">Dates de début sur les six derniers mois</p>
+        <div class="chart"><canvas id="month-chart" role="img" aria-label="Événements par mois"></canvas></div>
+        <details class="chart-data"><summary>Données du graphique</summary>
+            <table class="table table-sm"><thead><tr><th scope="col">Mois</th><th scope="col">Événements</th></tr></thead><tbody>
+            {% for label, count in month_rows %}<tr><td>{{ label }}</td><td>{{ count }}</td></tr>{% endfor %}
+            </tbody></table>
+        </details>
+    </section>
+    <section class="panel dashboard-panel">
+        <header class="section-header"><div><span class="section-icon"><i class="bi bi-pie-chart" aria-hidden="true"></i></span><h2>État des événements</h2></div></header>
+        <p class="muted">Répartition par statut</p>
+        {% if chart_data.statuses %}
+        <div class="chart"><canvas id="status-chart" role="img" aria-label="Répartition des événements par statut"></canvas></div>
+        <details class="chart-data"><summary>Données du graphique</summary>
+            <table class="table table-sm"><thead><tr><th scope="col">Statut</th><th scope="col">Événements</th></tr></thead><tbody>
+            {% for label, count in status_rows %}<tr><td>{{ label }}</td><td>{{ count }}</td></tr>{% endfor %}
+            </tbody></table>
+        </details>
+        {% else %}{% include 'components/empty.html' with icon='pie-chart' heading='Aucun événement à répartir' %}{% endif %}
+    </section>
+    <section class="panel dashboard-panel activity-panel">
+        <header class="section-header"><div><span class="section-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span><h2>Activités récentes</h2></div></header>
+        {% if activity %}
+        <ul class="dashboard-list">
+            {% for item, label in activity %}
+            <li><i class="bi bi-clock-history activity-icon" aria-hidden="true"></i><div><strong>{{ item.action }} · {{ label }}</strong><small>{{ item.user|default:"Compte supprimé" }} · {{ item.created_at|date:"d/m/Y à H:i" }}</small></div></li>
+            {% endfor %}
+        </ul>
+        {% else %}{% include 'components/empty.html' with icon='clock-history' heading='Aucune activité enregistrée' %}{% endif %}
+    </section>
+</div>
+<section class="dashboard-shortcuts" id="gestions" aria-labelledby="shortcuts-heading">
+    <h2 id="shortcuts-heading">Accès aux gestions</h2>
+    <div class="shortcuts">
+        {% for module, url in links %}<a class="panel shortcut theme-{{ module.slug }}" href="{{ url }}"><span class="metric-icon"><i class="bi bi-{{ module.icon }}" aria-hidden="true"></i></span><span>{{ module.label }}</span></a>{% endfor %}
+    </div>
+</section>
+{{ chart_data|json_script:"evenza-charts" }}
+{% endblock %}

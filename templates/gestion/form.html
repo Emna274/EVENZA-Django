@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'components/module_heading.html' %}
+{% include 'gestion/tabs.html' %}
+<form class="panel form-panel editor-panel" method="post">
+    {% csrf_token %}
+    <header class="section-header"><div><span class="section-icon"><i class="bi bi-{% block editor_icon %}pencil-square{% endblock %}" aria-hidden="true"></i></span><h2>Informations de la fiche</h2></div></header>
+    <div class="form-grid">{% include 'gestion/fields.html' %}</div>
+    <div class="button-row form-actions"><button class="btn btn-primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i> Enregistrer</button><a class="btn btn-outline-secondary" href="{{ list_url }}">Annuler</a></div>
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% load static %}
+<div class="empty{% if photo %} empty-photo{% endif %}">
+    {% if photo %}<img src="{% static photo %}" alt="" width="480" height="200" loading="lazy" decoding="async">{% endif %}
+    <div>
+        <span class="empty-icon"><i class="bi bi-{{ icon|default:'inbox' }}" aria-hidden="true"></i></span>
+        <h3>{{ heading }}</h3>
+        {% if description %}<p>{{ description }}</p>{% endif %}
+        {% if url %}<a class="btn btn-outline-secondary" href="{{ url }}">{{ action_label }}</a>{% endif %}
+    </div>
+</div>

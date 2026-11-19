@@ -1,0 +1,33 @@
+@font-face {
+    font-family: "Playfair Display";
+    src: url("../fonts/playfair-display.woff2") format("woff2");
+    font-weight: 400 900;
+    font-display: swap;
+}
+html[data-theme="light"], :root {
+    --primary: #683c50;
+    --secondary: #542d3b;
+    --accent: #ffd8af;
+    --link-fg: #68374c;
+    --link-hover-color: #45222f;
+    --link-selected-fg: #542d3b;
+    --body-bg: #fffdfa;
+    --body-fg: #292128;
+    --body-quiet-color: #68585f;
+    --darkened-bg: #f7f2ea;
+    --selected-bg: #f1e6e9;
+    --selected-row: #f8eedc;
+    --hairline-color: #eaded7;
+    --border-color: #dfd1c9;
+    --breadcrumbs-bg: #683c50;
+    --default-button-bg: #542d3b;
+    --button-hover-bg: #45222f;
+    --default-button-hover-bg: #45222f;
+}
+#site-name a, #content > h1 { font-family: "Playfair Display", Georgia, serif; }
+#site-name a { font-weight: 540; }
+#header a:focus-visible { outline: 2px solid #ffd8af; outline-offset: 3px; }
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] { --primary: #683c50; --secondary: #542d3b; --accent: #ffd8af; --breadcrumbs-bg: #683c50; }
+}
+html[data-theme="dark"] { --primary: #683c50; --secondary: #542d3b; --accent: #ffd8af; --breadcrumbs-bg: #683c50; }

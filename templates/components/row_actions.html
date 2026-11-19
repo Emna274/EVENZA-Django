@@ -1,0 +1,5 @@
+<div class="row-actions">
+    <a class="btn btn-outline-secondary btn-sm" href="{{ row.view_url }}" aria-label="Voir {{ row.cells.0 }}"><i class="bi bi-eye" aria-hidden="true"></i><span>Voir</span></a>
+    {% if row.edit_url %}<a class="btn btn-outline-secondary btn-sm" href="{{ row.edit_url }}" aria-label="Modifier {{ row.cells.0 }}"><i class="bi bi-pencil" aria-hidden="true"></i><span>Modifier</span></a>{% endif %}
+    {% if row.delete_url %}<a class="btn btn-outline-danger btn-sm" href="{{ row.delete_url }}" aria-label="Supprimer {{ row.cells.0 }}"><i class="bi bi-trash3" aria-hidden="true"></i><span>Supprimer</span></a>{% endif %}
+</div>

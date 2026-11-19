@@ -1,0 +1,7 @@
+{% if tabs|length > 1 %}
+<nav class="section-tabs" aria-label="Rubriques de la gestion">
+    {% for tab, url in tabs %}
+    <a href="{{ url }}" {% if tab == section %}aria-current="page"{% endif %}>{{ tab.label }}</a>
+    {% endfor %}
+</nav>
+{% endif %}

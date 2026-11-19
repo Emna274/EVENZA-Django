@@ -1,0 +1,25 @@
+{% extends 'gestion/list.html' %}
+{% block view_switcher %}
+            {% if rows %}
+            <nav class="view-switcher" aria-label="Présentation des prestataires">
+                <a href="{% querystring vue=None %}" class="icon-button" aria-label="Vue tableau" {% if request.GET.vue != 'cartes' %}aria-current="true"{% endif %}><i class="bi bi-table" aria-hidden="true"></i></a>
+                <a href="{% querystring vue='cartes' %}" class="icon-button" aria-label="Vue cartes" {% if request.GET.vue == 'cartes' %}aria-current="true"{% endif %}><i class="bi bi-grid" aria-hidden="true"></i></a>
+            </nav>
+            {% endif %}
+{% endblock %}
+{% block records_body %}
+        {% if request.GET.vue == 'cartes' %}
+        <div class="provider-grid">
+            {% for row in rows %}
+            <article class="provider-card">
+                <header><span class="record-avatar"><i class="bi bi-briefcase" aria-hidden="true"></i></span>{% include 'components/status.html' with value=row.cells.4 %}</header>
+                <h3><a href="{{ row.view_url }}">{{ row.cells.0 }}</a></h3>
+                <p class="provider-category">{{ row.cells.1 }}</p>
+                <p class="muted"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ row.cells.2 }}</p>
+                <p class="provider-contact">{{ row.cells.3 }}</p>
+                {% include 'components/row_actions.html' %}
+            </article>
+            {% endfor %}
+        </div>
+{% else %}{{ block.super }}{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'gestion/detail.html' %}
+{% block record_extras %}
+{% if badge_url %}
+<section class="panel form-panel">
+    <h2>Badge de présence</h2>
+    <img class="badge-image" src="{{ badge_url }}" width="170" height="170" alt="QR code du badge de présence">
+    <p class="mb-0"><a class="btn btn-outline-secondary" href="{{ badge_url }}" download="badge-evenza.svg">Télécharger le badge</a></p>
+</section>
+{% endif %}
+{% if can_upload %}
+<section class="panel form-panel">
+    <h2>Documents</h2>
+    {% for document in documents %}
+    <div class="document-row">
+        <a href="{% url 'download-document' document.pk %}"><i class="bi bi-file-earmark" aria-hidden="true"></i> {{ document }}</a>
+        <form method="post" action="{% url 'delete-document' document.pk %}" data-confirm="Supprimer ce document ?">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Supprimer</button></form>
+    </div>
+    {% empty %}<p class="muted">Aucun document associé.</p>{% endfor %}
+    <form class="upload-form" method="post" enctype="multipart/form-data" action="{% url 'upload-document' object.pk %}">
+        {% csrf_token %}
+        {% include 'gestion/fields.html' with form=document_form %}
+        <button class="btn btn-outline-secondary" type="submit">Déposer le document</button>
+    </form>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,104 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Évenza, votre espace de gestion événementielle.">
+    <title>{{ title|default:"Espace événementiel"|truncatechars:49 }} · Évenza</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/evenza.css' %}">
+    <script src="{% static 'js/evenza.js' %}" defer></script>
+    {% block scripts %}{% endblock %}
+</head>
+<body class="{% if user.is_authenticated %}app-shell{% else %}guest-shell{% endif %}{% if module %} theme-{{ module.slug }}{% endif %}">
+<a class="visually-hidden-focusable skip-link" href="#content">Aller au contenu</a>
+{% if user.is_authenticated %}
+{% url 'dashboard' as dashboard_url %}
+<div class="app">
+    <aside id="sidebar" class="sidebar" aria-label="Menu Évenza">
+        <div class="sidebar-brand">
+            {% include 'components/brand.html' with brand_url=dashboard_url %}
+            <button type="button" id="nav-close" class="icon-button nav-close" aria-label="Fermer le menu"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <nav aria-label="Navigation principale">
+            <a class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}current{% endif %}" href="{{ dashboard_url }}" {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}><i class="bi bi-grid-1x2" aria-hidden="true"></i> Tableau de bord</a>
+            <p class="nav-caption">Gestions</p>
+            {% for item, url in navigation %}
+            <a class="menu-item {% if module.slug == item.slug %}current{% endif %}" href="{{ url }}" {% if module.slug == item.slug %}aria-current="true"{% endif %}><i class="bi bi-{{ item.icon }}" aria-hidden="true"></i> {{ item.label }}</a>
+            {% endfor %}
+        </nav>
+        <div class="sidebar-footer">
+            <a class="menu-item {% if request.resolver_match.url_name == 'profile' %}current{% endif %}" href="{% url 'profile' %}"><i class="bi bi-gear" aria-hidden="true"></i> Paramètres</a>
+            <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="menu-item" type="submit"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Déconnexion</button></form>
+        </div>
+    </aside>
+    <div id="nav-backdrop" class="nav-backdrop" hidden></div>
+    <div class="workspace">
+        <header class="topbar">
+            <div class="topbar-start">
+                <button id="nav-toggle" class="icon-button nav-toggle" aria-expanded="false" aria-controls="sidebar" type="button" aria-label="Afficher la navigation"><i class="bi bi-list" aria-hidden="true"></i></button>
+                <nav aria-label="Fil d’Ariane">
+                    <ol class="breadcrumbs">
+                        {% if request.resolver_match.url_name == 'dashboard' %}
+                        <li aria-current="page"><i class="bi bi-house-door" aria-hidden="true"></i> Tableau de bord</li>
+                        {% else %}
+                        <li><a href="{{ dashboard_url }}" aria-label="Tableau de bord"><i class="bi bi-house-door" aria-hidden="true"></i><span>Tableau de bord</span></a></li>
+                        {% if module %}
+                            {% for item, url in navigation %}{% if item.slug == module.slug %}
+                            <li{% if request.path == url %} aria-current="page"{% endif %}>{% if request.path == url %}{{ item.label }}{% else %}<a href="{{ url }}">{{ item.label }}</a>{% endif %}</li>
+                            {% endif %}{% endfor %}
+                            {% if request.path != list_url %}
+                            {% if section.path %}<li><a href="{{ list_url }}">{{ section.label }}</a></li>{% endif %}
+                            <li aria-current="page" class="breadcrumb-leaf">{{ title|truncatechars:30 }}</li>
+                            {% elif section.path %}<li aria-current="page">{{ section.label }}</li>{% endif %}
+                        {% else %}<li aria-current="page">{{ title|default:"Évenza"|truncatechars:30 }}</li>{% endif %}
+                        {% endif %}
+                    </ol>
+                </nav>
+            </div>
+            <div class="topbar-actions">
+                <a class="icon-button notification-link" href="{% url 'notifications' %}" aria-label="Notifications{% if unread_notifications %}, {{ unread_notifications }} non lues{% endif %}"><i class="bi bi-bell" aria-hidden="true"></i>{% if unread_notifications %}<span class="notice-dot"></span>{% endif %}</a>
+                <a class="profile-link" href="{% url 'profile' %}" aria-label="Mon profil, {{ user.name }}"><span class="avatar" aria-hidden="true">{{ user.name|first|upper }}</span><span class="profile-text"><strong>{{ user.name }}</strong><small>{{ user.get_role_display }}</small></span></a>
+            </div>
+        </header>
+        <main id="content" class="page" tabindex="-1">
+            {% include 'gestion/messages.html' %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <dialog class="panel confirm-dialog" id="action-confirmation" aria-labelledby="confirmation-title">
+        <form method="dialog">
+            <span class="decision-icon"><i class="bi bi-exclamation-lg" aria-hidden="true"></i></span>
+            <h2 id="confirmation-title">Confirmer l’action</h2>
+            <p data-confirmation-text></p>
+            <div class="button-row"><button class="btn btn-outline-secondary" value="cancel" autofocus>Annuler</button><button class="btn btn-danger" value="confirm">Confirmer</button></div>
+        </form>
+    </dialog>
+</div>
+{% else %}
+{% url 'login' as login_url %}
+<main id="content" class="guest" tabindex="-1">
+    <div class="guest-brand">
+        <picture><source media="(max-width: 640px)" srcset="{% static 'images/reception-mobile.webp' %}">
+            <img class="guest-photo" src="{% static 'images/reception.webp' %}" alt="" fetchpriority="high">
+        </picture>
+        <div class="guest-brand-inner">
+            {% include 'components/brand.html' with brand_url=login_url %}
+            <div class="guest-quote">
+                <span class="signature-rule" aria-hidden="true"><i class="bi bi-stars"></i></span>
+                <p class="brand-line">Des idées<br> aux <em>émotions.</em></p>
+                <p class="brand-description">Vos événements, vos partenaires et vos équipes dans un même espace.</p>
+            </div>
+        </div>
+    </div>
+    <section class="guest-content">
+        {% include 'gestion/messages.html' %}
+        {% block guest_content %}{% endblock %}
+    </section>
+</main>
+{% endif %}
+</body>
+</html>

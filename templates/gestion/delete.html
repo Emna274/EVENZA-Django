@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'components/module_heading.html' with heading='Supprimer la fiche' %}
+<form class="panel form-panel decision-panel" method="post">
+    {% csrf_token %}
+    <span class="decision-icon"><i class="bi bi-trash3" aria-hidden="true"></i></span>
+    <h2>Confirmer la suppression</h2>
+    {{ form.non_field_errors }}
+    <p>Voulez-vous supprimer définitivement <strong>{{ object }}</strong> ?</p>
+    <div class="button-row"><a class="btn btn-outline-secondary" href="{{ list_url }}">Annuler</a><button type="submit" class="btn btn-danger">Confirmer la suppression</button></div>
+</form>
+{% endblock %}

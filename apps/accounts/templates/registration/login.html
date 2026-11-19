@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block guest_content %}
+<header class="auth-heading">
+    <span class="auth-icon"><i class="bi bi-key" aria-hidden="true"></i></span>
+    <h1>Connexion</h1>
+    <p class="muted">Retrouvez vos événements et votre équipe.</p>
+</header>
+<form method="post" class="auth-form">
+    {% csrf_token %}
+    {% include 'gestion/fields.html' %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <a class="password-link" href="{% url 'password_reset' %}">Mot de passe oublié ?</a>
+    <button class="btn btn-primary" type="submit"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Se connecter</button>
+</form>
+<div class="auth-links"><a href="{% url 'signup' %}">Créer un compte</a></div>
+{% endblock %}
+{% block content %}<header class="page-heading"><div><h1>Vous êtes connecté</h1></div><a class="btn btn-primary" href="{% url 'dashboard' %}">Tableau de bord</a></header>{% endblock %}

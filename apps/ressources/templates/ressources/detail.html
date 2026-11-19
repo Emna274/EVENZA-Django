@@ -1,0 +1,13 @@
+{% extends 'gestion/detail.html' %}
+{% block record_extras %}
+{% if availability_form %}
+<section class="panel form-panel">
+    <h2>Disponibilité sur un créneau</h2>
+    <form method="get">
+        <div class="form-grid">{% include 'gestion/fields.html' with form=availability_form %}</div>
+        <div class="button-row"><button class="btn btn-outline-secondary" type="submit">Vérifier la disponibilité</button></div>
+    </form>
+    {% if available_quantity != None %}<p class="mb-0 mt-3" role="status">Quantité disponible sur tout le créneau <strong>{{ available_quantity }}</strong></p>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

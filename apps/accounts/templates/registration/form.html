@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block guest_content %}
+<header class="auth-heading"><span class="auth-icon"><i class="bi bi-person-check" aria-hidden="true"></i></span><h1>{{ title }}</h1></header>
+{% if validlink == False %}
+    <p class="muted">Ce lien a expiré ou a déjà été utilisé.</p><a href="{% url 'password_reset' %}">Demander un nouveau lien</a>
+{% else %}
+    {% include 'registration/form_fields.html' %}
+{% endif %}
+<div class="auth-links"><a href="{% url 'login' %}">Retour à la connexion</a></div>
+{% endblock %}
+{% block content %}
+<header class="page-heading"><div><h1>{{ title }}</h1></div></header>
+<div class="panel form-panel">{% include 'registration/form_fields.html' %}</div>
+{% endblock %}

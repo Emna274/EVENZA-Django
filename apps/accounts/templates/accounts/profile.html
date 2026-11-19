@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="page-heading"><div><h1>{{ title }}</h1><p>Votre profil et vos préférences de compte.</p></div></header>
+<form class="panel form-panel" method="post">
+    {% csrf_token %}
+    <header class="section-header"><div><span class="section-icon"><i class="bi bi-person-circle" aria-hidden="true"></i></span><h2>Mon profil</h2></div></header>
+    <dl class="detail-grid mb-3"><div><dt>Adresse e-mail</dt><dd>{{ user.email }}</dd></div><div><dt>Rôle</dt><dd>{{ user.get_role_display }}</dd></div></dl>
+    <div class="form-grid">{% include 'gestion/fields.html' %}</div>
+    <div class="button-row"><button type="submit" class="btn btn-primary">Enregistrer</button><a class="btn btn-outline-secondary" href="{% url 'password_change' %}">Changer mon mot de passe</a></div>
+</form>
+{% if user.is_staff %}
+<section class="panel form-panel"><h2>Administration Django</h2><a class="btn btn-outline-secondary" href="{% url 'admin:index' %}">Gérer les permissions et les journaux</a></section>
+{% endif %}
+{% endblock %}

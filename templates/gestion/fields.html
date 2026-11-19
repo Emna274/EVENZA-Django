@@ -1,0 +1,17 @@
+{{ form.non_field_errors }}
+{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% for field in form.visible_fields %}
+    {% if field.widget_type == 'checkbox' %}
+    <div class="form-check">{{ field }} {{ field.label_tag }} {{ field.errors }}</div>
+    {% else %}
+    <div class="field {% if field.widget_type == 'textarea' %}wide{% endif %}{% if field.errors %} field-invalid{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span aria-hidden="true">*</span>{% endif %}</label>
+        <div class="field-control">
+            {% if field.widget_type == 'email' %}<i class="bi bi-envelope field-icon" aria-hidden="true"></i>{% elif field.widget_type == 'password' %}<i class="bi bi-lock field-icon" aria-hidden="true"></i>{% endif %}
+            {{ field }}
+        </div>
+        {{ field.errors }}
+        {% if field.help_text %}<div class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</div>{% endif %}
+    </div>
+    {% endif %}
+{% endfor %}

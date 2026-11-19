@@ -1,0 +1,21 @@
+{% load static evenza_ui %}
+<header class="page-heading module-heading">
+    {% if section.key == 'events' %}
+    <div class="module-photo" aria-hidden="true">
+        {% if heading_mode == 'detail' %}<img src="{% static object.type|event_cover %}" alt="" decoding="async">
+        {% else %}<img src="{% static 'images/gala-card.webp' %}" alt="" decoding="async">{% endif %}
+    </div>
+    {% endif %}
+    <div class="module-heading-content">
+        <span class="module-emblem"><i class="bi bi-{{ module.icon }}" aria-hidden="true"></i></span>
+        <div><h1>{{ heading|default:title }}</h1>{% if subtitle %}<p>{{ subtitle }}</p>{% endif %}</div>
+    </div>
+    {% if heading_mode == 'list' and create_url %}
+    <div class="heading-actions"><a href="{{ create_url }}" class="btn btn-primary"><i class="bi bi-plus-lg" aria-hidden="true"></i> {% if section.key == 'events' %}Créer un événement{% else %}Ajouter{% endif %}</a></div>
+    {% elif heading_mode == 'detail' %}
+    <div class="heading-actions">
+        {% if edit_url %}<a class="btn btn-primary" href="{{ edit_url }}"><i class="bi bi-pencil" aria-hidden="true"></i> Modifier</a>{% endif %}
+        {% if delete_url %}<a class="btn btn-outline-danger" href="{{ delete_url }}"><i class="bi bi-trash3" aria-hidden="true"></i> Supprimer</a>{% endif %}
+    </div>
+    {% endif %}
+</header>

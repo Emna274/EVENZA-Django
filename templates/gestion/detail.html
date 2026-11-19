@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'components/module_heading.html' with heading_mode='detail' %}
+{% include 'gestion/tabs.html' %}
+<section class="panel form-panel">
+    <header class="section-header"><div><span class="section-icon"><i class="bi bi-card-list" aria-hidden="true"></i></span><h2>Renseignements</h2></div></header>
+    <dl class="detail-grid">
+        {% for label, value in details %}<div><dt>{{ label|capfirst }}</dt><dd>{% if label == 'statut' or label == 'état' %}{% include 'components/status.html' with value=value %}{% else %}{{ value }}{% endif %}</dd></div>{% endfor %}
+    </dl>
+    {% if operations %}<div class="button-row">
+        {% for operation, label, url in operations %}<form method="post" action="{{ url }}">{% csrf_token %}<button type="submit" class="btn btn-outline-secondary">{{ label }}</button></form>{% endfor %}
+    </div>{% endif %}
+</section>
+{% block record_extras %}{% endblock %}
+{% if related_groups %}
+<div class="related-grid">
+    {% for group, records in related_groups %}
+    <section class="panel form-panel"><h2>{{ group }}</h2>
+        <ul class="linked-list">{% for label, url in records %}<li><a href="{{ url }}">{{ label }}</a></li>{% empty %}<li class="muted">Aucune fiche associée.</li>{% endfor %}</ul>
+    </section>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

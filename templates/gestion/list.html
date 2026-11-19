@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static evenza_ui %}
+{% block content %}
+{% include 'components/module_heading.html' with heading_mode='list' %}
+{% include 'gestion/tabs.html' %}
+<div class="module-stats" aria-label="Statistiques de la rubrique">
+    <article class="panel metric"><span class="metric-icon"><i class="bi bi-{{ module.icon }}" aria-hidden="true"></i></span><div><span>{{ section.label }}</span><strong>{{ total_count }}</strong></div></article>
+    {% if request.GET.q or request.GET.date or request.GET.status or request.GET.role or request.GET.event or request.GET.resource or request.GET.type or request.GET.category or request.GET.is_active %}
+    <article class="panel metric"><span class="metric-icon"><i class="bi bi-filter" aria-hidden="true"></i></span><div><span>Résultats filtrés</span><strong>{{ filtered_count }}</strong></div></article>
+    {% else %}
+    {% for label, total in breakdown|slice:":3" %}
+    <article class="panel metric"><span class="metric-icon"><i class="bi bi-bar-chart" aria-hidden="true"></i></span><div><span>{{ label }}</span><strong>{{ total }}</strong></div></article>
+    {% endfor %}
+    {% endif %}
+</div>
+<section class="panel records" aria-labelledby="records-heading">
+    <div class="records-header">
+        <h2 id="records-heading">{{ section.label }}</h2>
+        <div class="records-actions">
+            {% block view_switcher %}{% endblock %}
+            {% if rows %}<a class="btn btn-outline-secondary export" href="{% querystring export='csv' page=None %}"><i class="bi bi-download" aria-hidden="true"></i> Exporter CSV</a>{% endif %}
+        </div>
+    </div>
+    <div class="table-toolbar">
+        <form method="get" class="filters" aria-label="Filtrer les fiches">
+            {% if request.GET.vue == 'cartes' %}<input type="hidden" name="vue" value="cartes">{% endif %}
+            <label class="search-field"><span>Rechercher</span><span class="filter-input"><i class="bi bi-search" aria-hidden="true"></i><input type="search" maxlength="200" class="form-control" name="q" value="{{ query }}" placeholder="Nom, mot-clé…"></span></label>
+            {% for filter in filters %}
+            <label><span>{{ filter.label }}</span><select class="form-select" name="{{ filter.name }}">
+                <option value="">Tout</option>
+                {% for value, label in filter.options %}<option value="{{ value }}" {% if value == filter.selected %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select></label>
+            {% endfor %}
+            {% if date_filter %}<label><span>Date</span><input class="form-control" type="date" name="date" value="{{ chosen_date|date:'Y-m-d' }}"></label>{% endif %}
+            <div class="filter-actions"><button type="submit" class="btn btn-outline-secondary"><i class="bi bi-sliders2" aria-hidden="true"></i> Filtrer</button>
+            {% if request.GET %}<a class="btn btn-link" href="{{ list_url }}{% if request.GET.vue == 'cartes' %}?vue=cartes{% endif %}">Réinitialiser</a>{% endif %}</div>
+        </form>
+    </div>
+    {% if rows %}
+        {% block records_body %}
+        <div class="table-responsive" tabindex="0" role="region" aria-label="Tableau {{ section.label }}">
+            <table class="table align-middle mb-0 records-table">
+                <thead><tr>{% for heading in headings %}<th scope="col">{{ heading|capfirst }}</th>{% endfor %}<th scope="col">Actions</th></tr></thead>
+                <tbody>{% for row in rows %}<tr>
+                    {% for cell in row.cells %}
+                    {% if forloop.first %}
+                    <th scope="row"><a class="row-name" href="{{ row.view_url }}">
+                        {% if section.key == 'events' %}{% include 'evenements/row_preview.html' %}
+                        {% elif section.key == 'users' or section.key == 'participants' %}{% include 'utilisateurs/row_avatar.html' %}
+                        {% else %}<span class="record-avatar"><i class="bi bi-{{ module.icon }}" aria-hidden="true"></i></span>{% endif %}
+                        {{ cell }}</a></th>
+                    {% else %}
+                    <td>{% if section|status_column:forloop.counter0 %}{% include 'components/status.html' with value=cell %}{% elif section.key == 'events' and forloop.counter == 3 %}<i class="bi bi-geo-alt table-icon" aria-hidden="true"></i> {{ cell }}{% else %}{{ cell }}{% endif %}</td>
+                    {% endif %}
+                    {% endfor %}
+                    <td>{% include 'components/row_actions.html' %}</td>
+                </tr>{% endfor %}</tbody>
+            </table>
+        </div>
+        {% endblock %}
+        {% include 'gestion/pagination.html' %}
+    {% else %}
+        {% if total_count %}
+        {% include 'components/empty.html' with icon='search' heading='Aucun résultat' description='Modifiez les filtres ou essayez un autre terme.' %}
+        {% else %}
+        {% include 'components/empty.html' with photo='images/private-card.webp' icon=module.icon heading='Aucune fiche pour le moment' description='Les fiches de cette rubrique apparaîtront ici.' url=create_url action_label='Ajouter une fiche' %}
+        {% endif %}
+    {% endif %}
+</section>
+{% endblock %}

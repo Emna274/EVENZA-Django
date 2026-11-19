@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="page-heading"><div><h1>Votre invitation</h1><p>{{ record.event }} · {{ record.event.start_at|date:"d/m/Y à H:i" }}</p></div></header>
+<form class="panel form-panel" method="post">
+    {% csrf_token %}
+    <p>Souhaitez-vous participer à cet événement ?</p>
+    <div class="button-row"><button class="btn btn-primary" name="response" value="confirm" type="submit">Confirmer</button><button class="btn btn-outline-secondary" name="response" value="decline" type="submit">Refuser</button></div>
+</form>
+{% endblock %}

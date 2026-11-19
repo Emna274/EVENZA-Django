@@ -1,0 +1,1 @@
+{% load evenza_ui %}{% with style=value|status_style %}<span class="pill{% if style %} pill-{{ style }}{% endif %}"><span class="status-dot" aria-hidden="true"></span>{{ value }}</span>{% endwith %}

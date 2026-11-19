@@ -1,0 +1,57 @@
+# Python et environnements
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.vendor/
+.dependency-download/
+.tools/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Secrets et données locales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+/backups/
+/media/*
+!/media/.gitkeep
+/storage/
+/private/
+/secrets/
+
+# IDE et fichiers temporaires Windows
+.idea/
+.vscode/
+.vs/
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.log
+*.tmp
+*.bak
+*.swp
+~$*
+
+# Archives PHP du prototype local
+/app/
+/database/
+/public/assets/vendor/

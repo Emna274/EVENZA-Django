@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="page-heading"><div><h1>{{ title }}</h1><p>{{ record.event }} · {{ record.event.start_at|date:"d/m/Y à H:i" }}</p></div></header>
+<form class="panel form-panel" method="post">
+    {% csrf_token %}
+    <p><strong>{{ record.name }}</strong> · {{ record.get_status_display }}</p>
+    <div class="button-row"><button class="btn btn-primary" type="submit">Confirmer la présence</button></div>
+</form>
+{% endblock %}

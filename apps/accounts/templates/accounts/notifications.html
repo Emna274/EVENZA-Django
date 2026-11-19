@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="page-heading">
+    <div><h1>{{ title }}</h1><p>Suivez les mises à jour qui vous concernent.</p></div>
+    {% if unread_notifications %}<form method="post">{% csrf_token %}<button class="btn btn-primary" type="submit">Tout marquer comme lu</button></form>{% endif %}
+</header>
+<section class="panel form-panel">
+    {% for item in object_list %}
+    <article class="notification-row">
+        <div class="notification-content"><span class="section-icon"><i class="bi bi-{% if item.read_at %}check2{% else %}bell{% endif %}" aria-hidden="true"></i></span><div><p>{{ item.message }}</p><small>{{ item.created_at|date:"d/m/Y à H:i" }}</small></div></div>
+        {% if not item.read_at %}<form method="post">{% csrf_token %}<button class="btn btn-outline-secondary btn-sm" name="notification" value="{{ item.pk }}" type="submit">Marquer comme lue</button></form>{% endif %}
+    </article>
+    {% empty %}{% include 'components/empty.html' with icon='bell' heading='Aucune notification' %}{% endfor %}
+    {% include 'gestion/pagination.html' %}
+</section>
+{% endblock %}
